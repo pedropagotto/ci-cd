@@ -1,0 +1,64 @@
+trigger:
+  branches:
+    include:
+      - stage
+
+pool: server
+
+steps:
+  - task: InvokeRESTAPI@1
+    inputs:
+      connectionType: 'connectedServiceName'
+      serviceConnection: 'Discord-PR'
+      method: 'POST'
+      body: >
+        {
+          "username": "Conan o Brabo dos PR",
+          "embeds": [
+            {
+               "title": "Eai seus devs, abriram um novo PR.",
+               "description": "O que não nos mata nos torna mais forte, boa sorte com o code review.",
+               "url": "$(System.PullRequest.SourceRepositoryURI)",
+               "author": {
+                  "name": "$(Release.RequestedFor)",
+                   "icon_url": "https://preview.redd.it/gjxbt3y4e6081.gif?width=212&auto=webp&s=35b2abf715d2558c964cf064e4b5f61777105e1e"
+                },
+               "fields": [
+                  {
+                    "name": "Realizado Por:",
+                    "value": "$(Release.RequestedFor)",
+                    "inline": true
+                  },
+                  {
+                    "name": "De",
+                    "value": "$(System.PullRequest.SourceBranch)",
+                    "inline": true
+                  },
+                  {
+                    "name": "",
+                    "value": "->",
+                    "inline": true
+                  },
+                  {
+                    "name": "Para",
+                    "value": "$(System.PullRequest.TargetBranch)",
+                    "inline": true
+                  },
+                  {
+                    "name": "Numero PR:",
+                    "value": "$(System.PullRequest.PullRequestNumber)",
+                    "inline": true
+                  },
+                  {
+                    "name": "URL:",
+                    "value": "$(System.PullRequest.SourceRepositoryURI)"
+                  }
+                ],
+               "thumbnail": {
+                  "url": "https://media.tenor.com/JFb7OjmNcewAAAAM/cat-thinking.gif"
+                }
+            }
+          ]
+        }
+
+      waitForCompletion: 'false'

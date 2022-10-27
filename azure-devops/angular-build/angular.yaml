@@ -1,0 +1,32 @@
+trigger:
+  branches:
+    include:
+      - development
+pool:
+  vmImage: ubuntu-latest
+
+steps:
+  - task: NodeTool@0
+    inputs:
+      versionSpec: "14.x"
+    displayName: 'Install Node.js 14.x'
+
+  - script: |
+      cd premiervet
+      npm install -g @angular/cli@12.0.0
+      npm install
+      ng build --sourceMap=true --configuration=dev
+    displayName: "npm install and build dev"
+  - task: ArchiveFiles@2
+    displayName: 'Archive files'
+    inputs:
+      rootFolderOrFile: '$(System.DefaultWorkingDirectory)/your_project/dist/'
+      includeRootFolder: false
+      archiveType: zip
+      archiveFile: $(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip
+      replaceExistingArchive: true
+  - task: PublishBuildArtifacts@1
+    inputs:
+      PathtoPublish: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip'
+      ArtifactName: 'drop'
+      publishLocation: 'Container'
